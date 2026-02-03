@@ -4,7 +4,7 @@ Visual Saliency Model implementation based on the Itti-Koch architecture. This p
 
 For more details, refer to the [Metacognitive Attention.ipynb](Metacognitive_Attention.ipynb).
 
-To run this project, create a directory called `uplaods` in the same directory as `app.py`.
+To run this project, create a directory called `uploads` in the same directory as `app.py`.
 
 ## Working
 1. Install dependencies:
