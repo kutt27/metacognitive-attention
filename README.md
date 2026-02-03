@@ -6,6 +6,12 @@ For more details, refer to the [Metacognitive Attention.ipynb](Metacognitive_Att
 
 To run this project, create a directory called `uploads` in the same directory as `app.py`.
 
+Application:
+![Demo](application.png)
+
+After processing:
+![Demo-2](output.png)
+
 ## Working
 1. Install dependencies:
    ```bash
