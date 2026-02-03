@@ -23,5 +23,5 @@ After processing:
    ```
 3. Open [http://localhost:5000](http://localhost:5000) in your browser.
 
-## 📄 License
+## License
 MIT License
