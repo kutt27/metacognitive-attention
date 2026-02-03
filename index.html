@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metacognitive Attention - Visual Saliency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-color: #f3f1e9;
+            --text-color: #1a1a1a;
+            --border-color: #4a4a4a;
+            --accent-color: #2a2a2a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 6.5rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            letter-spacing: -0.02em;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        p.subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: #444;
+            letter-spacing: 0.05em;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        .upload-area {
+            width: 100%;
+            max-width: 650px;
+            height: 140px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            margin-bottom: 40px;
+        }
+
+        .upload-area:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+            transform: translateY(-2px);
+        }
+
+        .upload-area p {
+            font-size: 1.1rem;
+            color: #555;
+            font-weight: 300;
+        }
+
+        .upload-area strong {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            font-family: 'Newsreader', serif;
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            color: #d9534f;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .results-section {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            text-align: center;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-item h3 {
+            font-weight: 400;
+            font-size: 1.4rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 5px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .img-container {
+            width: 100%;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 4/3;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        footer {
+            margin-top: auto;
+            padding-top: 60px;
+            font-size: 1.4rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        footer a {
+            color: inherit;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        footer a:hover {
+            opacity: 0.7;
+        }
+
+        footer svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* iPad and tablet optimization */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            body {
+                padding: 30px 15px;
+            }
+
+            h1 {
+                font-size: 3.5rem;
+            }
+
+            .upload-area {
+                height: 130px;
+            }
+
+            .results-grid {
+                gap: 20px;
+            }
+        }
+
+        /* Small mobile phones */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            header {
+                margin-bottom: 30px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+                margin-bottom: 10px;
+            }
+
+            p.subtitle {
+                font-size: 0.95rem;
+                margin-bottom: 20px;
+            }
+
+            .upload-area {
+                height: 120px;
+                max-width: 100%;
+                margin-bottom: 30px;
+                border-radius: 15px;
+            }
+
+            .upload-area p {
+                font-size: 0.9rem;
+                padding: 0 10px;
+            }
+
+            .results-section {
+                width: 100%;
+                margin-top: 15px;
+            }
+
+            .results-grid {
+                gap: 15px;
+            }
+
+            .result-item h3 {
+                font-size: 1.1rem;
+            }
+
+            .img-container {
+                border-radius: 6px;
+            }
+
+            footer {
+                padding-top: 40px;
+                font-size: 1.1rem;
+                flex-wrap: wrap;
+            }
+
+            footer svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        /* Medium mobile phones (600px - 768px) */
+        @media (min-width: 600px) and (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            p.subtitle {
+                font-size: 1rem;
+            }
+
+            .upload-area {
+                height: 125px;
+                max-width: 100%;
+            }
+
+            .results-grid {
+                gap: 20px;
+            }
+
+            footer {
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Large mobile and iPad */
+        @media (min-width: 1024px) {
+            body {
+                padding: 40px 20px;
+            }
+
+            .container {
+                max-width: 1000px;
+            }
+
+            header {
+                margin-bottom: 40px;
+            }
+
+            .upload-area {
+                max-width: 650px;
+            }
+        }
+
+        /* Landscape orientation optimization */
+        @media (max-height: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            header {
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                margin-bottom: 8px;
+                font-size: 2.5rem;
+            }
+
+            .upload-area {
+                height: 100px;
+                margin-bottom: 20px;
+            }
+
+            footer {
+                padding-top: 20px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Prevent text overflow on all devices */
+        * {
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Ensure images are responsive */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Metacognitive Attention</h1>
+            <p class="subtitle">Visual Saliency Model - Itti-Koch Implementation</p>
+        </header>
+
+        <div class="upload-area" id="dropZone">
+            <p>Drag & Drop an image here or <strong>click to upload</strong></p>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div class="loading" id="loading">Processing visual attention...</div>
+        <div class="error" id="error"></div>
+
+        <div class="results-section" id="results">
+            <div class="results-grid">
+                <div class="result-item">
+                    <h3>Original</h3>
+                    <div class="img-container"><img id="originalImg" src="" alt=""></div>
+                </div>
+                <div class="result-item">
+                    <h3>Attention Overlay</h3>
+                    <div class="img-container"><img id="overlayImg" src="" alt=""></div>
+                </div>
+                <div class="result-item">
+                    <h3>Saliency Map</h3>
+                    <div class="img-container"><img id="saliencyImg" src="" alt=""></div>
+                </div>
+                <div class="result-item">
+                    <h3>Heatmap</h3>
+                    <div class="img-container"><img id="heatmapImg" src="" alt=""></div>
+                </div>
+            </div>
+        </div>
+
+        <footer id="mainFooter">
+            <a href="https://github.com/kutt27" target="_blank">
+                <i data-lucide="github"></i>
+                Built by: kutt27
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const results = document.getElementById('results');
+        const footer = document.getElementById('mainFooter');
+
+        dropZone.onclick = () => fileInput.click();
+
+        fileInput.onchange = (e) => {
+            if (e.target.files.length > 0) handleUpload(e.target.files[0]);
+        };
+
+        dropZone.ondragover = (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = 'rgba(0, 0, 0, 0.05)';
+        };
+
+        dropZone.ondragleave = () => {
+            dropZone.style.backgroundColor = 'transparent';
+        };
+
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.style.backgroundColor = 'transparent';
+            if (e.dataTransfer.files.length > 0) handleUpload(e.dataTransfer.files[0]);
+        };
+
+        async function handleUpload(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            results.style.display = 'none';
+            footer.style.display = 'none';
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('originalImg').src = `data:image/png;base64,${data.original}`;
+                    document.getElementById('overlayImg').src = `data:image/png;base64,${data.overlay}`;
+                    document.getElementById('saliencyImg').src = `data:image/png;base64,${data.saliency}`;
+                    document.getElementById('heatmapImg').src = `data:image/png;base64,${data.heatmap}`;
+                    results.style.display = 'block';
+                    footer.style.display = 'block';
+                    footer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    throw new Error(data.error || 'Failed to process image');
+                }
+            } catch (err) {
+                error.textContent = err.message;
+                error.style.display = 'block';
+                footer.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
